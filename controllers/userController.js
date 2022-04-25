@@ -11,7 +11,7 @@ const valid = await validate({username, email, password});
 
 if (valid){
 const hashPassword = await bcrypt.hash(valid.password,10);
-const user = await user.create({
+const user = await User.create({
     username,
     email,
     password:hashPassword,
