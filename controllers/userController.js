@@ -1,7 +1,7 @@
 const User = require("../models/userSchema")
 const bcrypt = require("bcryptjs")
 const validate = require("../config/validator")
-
+const {generateToken} = require("../utils/generateToken")
 //create new user
 
 const createUser = async (req, res)=>{
@@ -11,16 +11,21 @@ const valid = await validate({username, email, password});
 
 if (valid){
 const hashPassword = await bcrypt.hash(valid.password,10);
-const user = new user({
+const user = await user.create({
     username,
     email,
     password:hashPassword,
 });
-await user.save();
-res.status(201).json({
-    message: "User create successfully",
-    user,
-});
+if(user){
+    res.status(201).json({
+    username:user.username,
+    email:user.email,
+    id:user._id,
+    token:generateToken(user._id),
+        });
+}
+
+
 } else {
     res.status(400).json({
         message:"Invalid data",
